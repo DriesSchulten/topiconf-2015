@@ -84,7 +84,7 @@ public class FacturatieServiceTest extends AbstractSpringHibernateTest {
     FacturatieStatus status = service.factureer(dossier);
 
     assertEquals(Status.IN_BEHANDELING, status.getStatus());
-    assertNotNull(status.getId());
+    gassertNotNull(status.getId());
   }
 }
 						</code></pre>
@@ -97,7 +97,7 @@ public class FacturatieServiceTest extends AbstractSpringHibernateTest {
 					</section>
 					
 					<section>
-						<h3>Basis voorbeeld</h3>
+						<h3>Simpel voorbeeld</h3>
 						<pre><code data-trim contenteditable>
 @Test
 public void testHeeftToegangMetGeldigeHash() {
