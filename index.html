@@ -71,7 +71,7 @@
 					</section>
 					
 					<section>
-						<h3>Spring/Hibernate tests</h3>
+						<h3>De 'integratie'-unit-test</h3>
 							<pre><code data-trim contenteditable>
 public class FacturatieServiceTest extends AbstractSpringHibernateTest {
   @Autowired
@@ -81,62 +81,11 @@ public class FacturatieServiceTest extends AbstractSpringHibernateTest {
   public void testFactureer() {
     Dossier dossier = super.getTestObject(Dossier.class);
     
-	FacturatieStatus status = service.factureer(dossier);
+    FacturatieStatus status = service.factureer(dossier);
 
-	assertEquals(Status.IN_BEHANDELING, status.getStatus());
+    assertEquals(Status.IN_BEHANDELING, status.getStatus());
     assertNotNull(status.getId());
   }
-}
-						</code></pre>
-					</section>
-					
-					<section>
-						<h3>Wat testen we eigenlijk?</h3>
-						<pre><code data-trim contenteditable>
-@Test
-public void testMaakDossier() {
-  Patient patient = new Patient();
-  patient.setNummer("001956");
-  Persoon persoon = new Persoon();
-  persoon.setAchternaam("Jansen");
-  patient.setPersoon(persoon);
-  /* Nog 100 regels setup code */
-  dossierService.maakDossier(patient, datum, symptomen);
-}
-						</code></pre>						
-					</section>
-					
-					<section>
-						<h3>Naamgeving en combineren tests</h3>
-						<pre><code data-trim contenteditable>
-@Test(expected = IllegalArgumentException.class)
-public void testHash() {
-  assertEquals(200, service.controleerHash(geldigeHash));
-  assertEquals(403, service.controleerHash(verlopenHash));
-  assertEquals(403, service.controleerHash(teVaakGebruikteHash));
-  service.controleerHash(null);
-}
-						</code></pre>						
-					</section>
-					
-					<section>
-						<h3>afhankelijkheid</h3>
-						<pre><code data-trim contenteditable>
-private Persoon persoon = new Persoon();
-  
-@Test
-public void testNaamMetTussenvoegsel() {
-  persoon.setAchternaam("Jong");
-  persoon.setTussenvoegsel("de");
-  assertEquals("de Jong", persoon.getNaam());
-}
-  
-@Test
-public void testParterAchternaam() {
-  persoon.setAchternaam("Jansen");
-  persoon.setParterAchternaam("Vries");
-  persoon.setParterTussenvoegsel("de");
-  assertEquals("Jansen de Vries", persoon.getNaam());
 }
 						</code></pre>
 					</section>
