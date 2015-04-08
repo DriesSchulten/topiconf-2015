@@ -84,7 +84,7 @@ public class FacturatieServiceTest extends AbstractSpringHibernateTest {
     FacturatieStatus status = service.factureer(dossier);
 
     assertEquals(Status.IN_BEHANDELING, status.getStatus());
-    gassertNotNull(status.getId());
+    assertNotNull(status.getId());
   }
 }
 						</code></pre>
@@ -169,7 +169,7 @@ public void testAdresOpzoekenMetGeldigePostcode() {
 					</section>
 					
 					<section>
-						<h3>Wicket injector</h3>
+						<h3>Wicket Spring component</h3>
 						<pre><code data-trim contenteditable>
 public class PatientPanel extends Panel {
   /* Op fields met @SpringBean of @Inject annotaties */
@@ -214,7 +214,7 @@ public class PatientPanelTest {
 				
 				<section>
 					<section>
-						<h3>Hoe om te gaan met (systeem) resources</h3>
+						<h3>Hoe om te gaan met non-code dependencies</h3>
 					</section>
 					
 					<section>
@@ -306,6 +306,77 @@ public void testVerzendMdmMetOntvanger() {
   assertEquals(ontvangerCode, argument.getValue().getReceiverCode());
 }
 						</code></pre>
+					</section>
+				</section>
+				
+				<section>
+					<section>
+						<h3>Meer test framework features</h3>
+					</section>
+					
+					<section>
+						<h3>Leesbare asserts met JUnit</h3>
+						<pre><code data-trim contenteditable>
+public void testOphalenOnderzoekMetUitslagen() {
+  Uitslag uitslag1 = new Uitslag(/* ... */);
+  /* Rest setup geskipped... */
+  Onderzoek onderzoek = labService.getOnderzoek("1234");
+  
+  assertThat(onderzoek.getSamenvatting(), contains("uitslagen:"));
+  assertThat(onderzoek.getUitslagen(), hasItem(uitslag1));
+}
+						</code></pre>						
+					</section>
+					
+					<section>
+						<h3>JSON testen</h3>
+						<pre><code data-trim contenteditable>
+public void testGeneerEnumJson() {
+  Patient patient = new Patient();
+  patient.setBsnBron(BsnBron.SBVZ);
+	
+  String json = objectMapper.writeValueAsString(patient);
+  assertThat(json, sameJSONAs(new JSONObject().put("bsnBron", "SBV-Z"))
+      .allowingExtraUnexpectedFields());
+}
+						</code></pre>						
+					</section>
+					
+					<section>
+						<h3>Geparameteriseerde testen in Spock</h3>
+						<pre><code data-trim contenteditable>
+@Unroll
+def "Gegeven hash #hash moet fout #code opleveren"() {
+	given:
+	def securityService = new SecurityServiceImpl()
+	when:
+	def responseCode = securityService.controleerHash(hash)
+	then:
+	responseCode == code
+	where:
+	hash | code
+	null | 400
+	"12" | 401
+}
+						</code></pre>	
+					</section>
+				</section>
+				
+				<section>
+					<section>
+						<h3>Ter afsluiting</h3>
+						<p>Een unit-test:
+							<ul>
+								<li>is geen integratie test</li>
+								<li>test een enkele class</li>
+								<li>is 'to the point'</li>
+								<li>heeft duidelijke naamgeving</li>
+							</ul>
+						</p>
+					</section>
+					
+					<section>
+						<img src="img/ignore_commit.png"/>
 					</section>
 				</section>
 			</div>
