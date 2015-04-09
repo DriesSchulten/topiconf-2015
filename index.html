@@ -49,30 +49,27 @@
 				</section>
 
 				<section>
-					<section>
-						<h2>We kennen het allemaal...</h2>
-						<img class="fragment" src="img/start_release.png"/>
-					</section>
-					<section>
-						<h2>Wachten...</h2>
-						<img src="img/release_fail.png"/>
-						<img class="fragment" src="img/test_fail.png"/>
-					</section>
-					<section>
-						<h2>Quick fix!</h2>
-						<img src="img/ignore_commit.png"/>						
-						<img class="fragment" src="img/release_succes.png"/>						
-					</section>
+					<h2>We kennen het allemaal...</h2>
+					<img class="fragment" src="img/start_release.png"/>
 				</section>
-
 				<section>
-					<section>
-						<h2>Problematische tests</h2>
-					</section>
+					<h2>Wachten...</h2>
+					<img src="img/release_fail.png"/>
+					<img class="fragment" src="img/test_fail.png"/>
+				</section>
+				<section>
+					<h2>Quick fix!</h2>
+					<img src="img/ignore_commit.png"/>						
+					<img class="fragment" src="img/release_succes.png"/>						
+				</section>
 					
-					<section>
-						<h3>De 'integratie'-unit-test</h3>
-							<pre><code data-trim contenteditable>
+				<section>
+					<h2>Problematische tests</h2>
+				</section>
+				
+				<section>
+					<h3>De 'integratie'-unit-test</h3>
+						<pre><code data-trim class="java" contenteditable>
 public class FacturatieServiceTest extends AbstractSpringHibernateTest {
   @Autowired
   private FacturatieService service;
@@ -87,30 +84,31 @@ public class FacturatieServiceTest extends AbstractSpringHibernateTest {
     assertNotNull(status.getId());
   }
 }
-						</code></pre>
-					</section>
+					</code></pre>
+				</section>
+
+				<section>
+					<h2>Hoe dan wel?</h2>
 				</section>
 				
 				<section>
-					<section>
-						<h2>Hoe dan wel?</h2>
-					</section>
-					
-					<section>
-						<h3>Simpel voorbeeld</h3>
-						<pre><code data-trim contenteditable>
+					<h3>Simpel voorbeeld</h3>
+					<pre><code data-trim class="java" contenteditable>
 @Test
 public void testHeeftToegangMetGeldigeHash() {
   SecurityService service = new SecurityServiceImpl();
   String geldigeHash = DigestUtils.sha1Hex("geheim");
-  assertEquals(200, service.controleerHash(geldigeHash));
+  
+  int code = service.controleerHash(geldigeHash)
+  
+  assertEquals(200, code);
 }
-						</code></pre>
-					</section>
-					
-					<section>
-						<h3>Mocken van dependencies <sub style="font-size: 50%;">met Mockito</sub></h3>
-						<pre><code data-trim contenteditable>
+					</code></pre>
+				</section>
+				
+				<section>
+					<h3>Mocken van dependencies <sub style="font-size: 50%;">met Mockito</sub></h3>
+					<pre><code data-trim class="java" contenteditable>
 @Test
 public void testStartFacturatieMetDossier() {
   FacturatieDao dao = Mockito.mock(FacturatieDao.class);
@@ -120,35 +118,18 @@ public void testStartFacturatieMetDossier() {
   FacturatieStatus status = service.factureer(dossier);
  
   assertEquals(Status.IN_BEHANDELING, status.getStatus());
-  Mockito.verify(dao).saveOrUpdate(status);
+  Mockito.verify(oneOf(), dao).saveOrUpdate(status);
 }
-						</code></pre>
-					</section>
-					
-					<section>
-						<h3>Specificeren van gedrag <sub style="font-size: 50%;">met Mockito</sub></h3>
-						<pre><code data-trim contenteditable>
-@Test
-public void testAdresOpzoekenMetOngeldigePostcode() {
-  PostcodeWebService ws = mock(PostcodeWebService.class);
-  PostcodeService service = new PostcodeServiceImpl(ws);
-  String postcode = "123456";
-  
-  when(ws.getAdres(postcode)).thenThrow(new WebException(400));
-  
-  Optional&lt;Adres&gt; adres = service.getAdres(postcode);
-  assertFalse(adres.isPresent());
-}
-						</code></pre>						
-					</section>
-					
-					<section>
-						<h3>Return waarden specificeren <sub style="font-size: 50%;">met Mockito</sub></h3>
-						<pre><code data-trim contenteditable>
+					</code></pre>
+				</section>
+				
+				<section>
+					<h3>Return waarden specificeren <sub style="font-size: 50%;">met Mockito</sub></h3>
+					<pre><code data-trim class="java" contenteditable>
 @Test
 public void testAdresOpzoekenMetGeldigePostcode() {
   PostcodeWebService ws = mock(PostcodeWebService.class);
-  PostcodeService service = new PostcodeServiceImpl(ws);
+  AdresService service = new AdresService(ws);
   String postcode = "7417ZR";
   
   Adres testAdres = new Adres("Keizerstraat", 20);
@@ -158,45 +139,42 @@ public void testAdresOpzoekenMetGeldigePostcode() {
   assertTrue(adres.isPresent());
   assertEquals(testAdres, adres.get());
 }
-						</code></pre>							
-					</section>
+					</code></pre>							
+				</section>
+
+				<section>
+					<h3>Wicket</h3>
+					<p>Hoe te testen met een unit-test?</p>
 				</section>
 				
 				<section>
-					<section>
-						<h3>Wicket</h3>
-						<p>Hoe te testen met een unit-test?</p>
-					</section>
-					
-					<section>
-						<h3>Wicket Spring component</h3>
-						<pre><code data-trim contenteditable>
+					<h3>Wicket Spring component</h3>
+					<pre><code data-trim class="java" contenteditable>
 public class PatientPanel extends Panel {
-  /* Op fields met @SpringBean of @Inject annotaties */
   @SpringBean
   private AdresService adresService;
 	
   public PatientPanel(String id, IModel&lt;Patient&gt; model) {
     super(id, model);
 		
-    Adres adres = adresService.getAdres(getModelObject());
+    IModel&lt;Adres&gt; adres = new Model&lt;&gt;(adresService.getAdres(getModelObject()));
     addAdresInfo(adres);
   }
 }
-						</code></pre>						
-					</section>
-					
-					<section>
-						<h3>Een Mockito injector</h3>
-						<pre><code data-trim contenteditable>
+					</code></pre>						
+				</section>
+				
+				<section>
+					<h3>Een Mockito injector</h3>
+					<pre><code data-trim class="java" contenteditable>
 public class PatientPanelTest {
-  @Mock
   private AdresService adresService;
   
   private WicketTester wicketTester;
 	
   @Before
   public void setup() {
+    adresService = mock(AdresService.class);
     Application app = new MockApplication();
     app.getComponentInstantiationListeners().add(
 	    new MockitoMockInjector(app, adresService));
@@ -205,23 +183,22 @@ public class PatientPanelTest {
 	
   @Test
   public void testRenderAdresVanPatientMetGeldigAdres() {
+    when(adersService.getAdres(anyString())).thenReturn(new Adres()); 
+	  
     wicketTester.startComponentInPage(new PatientPanel("id", 
         Model.of(new Patient())));
-    /* asserts */
   }
 }
-						</code></pre>								
-					</section>
+					</code></pre>								
 				</section>
 				
 				<section>
-					<section>
-						<h3>Hoe om te gaan met non-code dependencies</h3>
-					</section>
-					
-					<section>
-						<h3>HL7 bericht versturen met bijlage</h3>
-						<pre><code data-trim contenteditable>
+					<h3>Hoe om te gaan met non-code dependencies</h3>
+				</section>
+				
+				<section>
+					<h3>HL7 bericht versturen met bijlage</h3>
+					<pre><code data-trim class="java" contenteditable>
 public class MdmVerzendServiceImpl implements MdmVerzendService {
   @Autowired
   private Hl7Verzender verzender;
@@ -241,17 +218,17 @@ public class MdmVerzendServiceImpl implements MdmVerzendService {
     /* Document van schijf halen en converteren met exception handling enz... */
   }
 }
-						</code></pre>
-					</section>
-					
-					<section>
-						<h3>Oplossing <sub class="fragment" style="font-size: 50%;">toch?</sub></h3>
-						<pre><code data-trim contenteditable>
+					</code></pre>
+				</section>
+				
+				<section>
+					<h3>Oplossing <sub class="fragment" style="font-size: 50%;">toch?</sub></h3>
+					<pre><code data-trim class="java" contenteditable>
 public void testVerzendMdmMetOntvanger() {
-  File testDocument = new File(getClass.getResource("/test_document.pdf").toURI());
   final String ontvangerCode = "0956124";	
   Document document = new Document("Overdracht");
   document.setOnvangerCode(ontvangerCode);
+  File testDocument = new File(getClass().getResource("/test_document.pdf").toURI());
   document.setBestandsLocatie(testDocument.getAbsolutePath());
   
   mdmVerzendService.verzendMdmVoorDocument(document);
@@ -260,12 +237,12 @@ public void testVerzendMdmMetOntvanger() {
   verify(verzender).verzend(argument.capture());
   assertEquals(ontvangerCode, argument.getValue().getReceiverCode());
 }
-						</code></pre>						
-					</section>
-					
-					<section>
-						<h3>De betere oplossing (1)</h3>
-						<pre><code data-trim contenteditable>
+					</code></pre>						
+				</section>
+				
+				<section>
+					<h3>De betere oplossing (1)</h3>
+					<pre><code data-trim class="java" contenteditable>
 public interface DocumentIO {
   String laadDocumentDataAlsBase64(Document document);
 }
@@ -287,12 +264,12 @@ public class MdmVerzendServiceImpl implements MdmVerzendService {
     verzender.verzend(mdm);
   }	
 }
-						</code></pre>						
-					</section>
-					
-					<section>
-						<h3>De betere oplossing (2)</h3>
-						<pre><code data-trim contenteditable>
+					</code></pre>						
+				</section>
+				
+				<section>
+					<h3>De betere oplossing (2)</h3>
+					<pre><code data-trim class="java" contenteditable>
 public void testVerzendMdmMetOntvanger() {
   final String ontvangerCode = "0956124";	
   Document document = new Document("Overdracht");
@@ -307,79 +284,43 @@ public void testVerzendMdmMetOntvanger() {
   verify(verzender).verzend(argument.capture());
   assertEquals(ontvangerCode, argument.getValue().getReceiverCode());
 }
-						</code></pre>
-					</section>
+					</code></pre>
 				</section>
-				
-				<section>
-					<section>
-						<h3>Meer test framework features</h3>
-					</section>
-					
-					<section>
-						<h3>Leesbare asserts met JUnit</h3>
-						<pre><code data-trim contenteditable>
-public void testOphalenOnderzoekMetUitslagen() {
-  Uitslag uitslag1 = new Uitslag(/* ... */);
-  /* Rest setup geskipped... */
-  Onderzoek onderzoek = labService.getOnderzoek("1234");
-  
-  assertThat(onderzoek.getSamenvatting(), contains("uitslagen:"));
-  assertThat(onderzoek.getUitslagen(), hasItem(uitslag1));
-}
-						</code></pre>						
-					</section>
-					
-					<section>
-						<h3>JSON testen</h3>
-						<pre><code data-trim contenteditable>
-public void testGeneerEnumJson() {
-  Patient patient = new Patient();
-  patient.setBsnBron(BsnBron.SBVZ);
-	
-  String json = objectMapper.writeValueAsString(patient);
-  assertThat(json, sameJSONAs(new JSONObject().put("bsnBron", "SBV-Z"))
-      .allowingExtraUnexpectedFields());
-}
-						</code></pre>						
-					</section>
-					
-					<section>
-						<h3>Geparameteriseerde testen in Spock</h3>
-						<pre><code data-trim contenteditable>
-@Unroll
-def "Gegeven hash #hash moet fout #code opleveren"() {
+			
+			<section>
+				<h3>Spock</h3>
+				<pre><code data-trim class="groovy" contenteditable>
+def "De adresService moet een geldig adres kunnen ophalen"() {
   given:
-  def securityService = new SecurityServiceImpl()
+  def postcodeWebService = Mock(PostcodeWebService)
+  def adresService = new AdresServiceImpl()
+
   when:
-  def responseCode = securityService.controleerHash(hash)
+  1 * postcodeWebService.getAdres(_ as String) >> new Adres("Keizerstraat", 20)
+  def adres = adresService.getAdres("7417ZR")
+
   then:
-  responseCode == code
-  where:
-  hash | code
-  null | 400
-  "12" | 401
+  adres.isPresent()
+  adres.get().straat == "Keizerstraat"
+  adres.get().nummer == 20
 }
-						</code></pre>	
-					</section>
+				</code></pre>	
+				</section>
+			
+				<section>
+					<h3>Ter afsluiting</h3>
+					<p>Een unit-test:
+						<ul>
+							<li>is geen integratie test</li>
+							<li>test een enkele class</li>
+							<li>is 'to the point'</li>
+							<li>heeft duidelijke naamgeving</li>
+						</ul>
+					</p>
 				</section>
 				
 				<section>
-					<section>
-						<h3>Ter afsluiting</h3>
-						<p>Een unit-test:
-							<ul>
-								<li>is geen integratie test</li>
-								<li>test een enkele class</li>
-								<li>is 'to the point'</li>
-								<li>heeft duidelijke naamgeving</li>
-							</ul>
-						</p>
-					</section>
-					
-					<section>
-						<img src="img/ignore_commit.png"/>
-					</section>
+					<img src="img/ignore_commit.png"/>
 				</section>
 			</div>
 
