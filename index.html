@@ -166,7 +166,6 @@ public class PatientPanel extends Panel {
 					<pre><code data-trim class="java">
 public class PatientPanelTest {
   private AdresService adresService;
-  
   private WicketTester wicketTester;
 	
   @Before
@@ -180,7 +179,7 @@ public class PatientPanelTest {
 	
   @Test
   public void testRenderAdresVanPatientMetGeldigAdres() {
-    when(adresService.getAdres(anyString())).thenReturn(new Adres()); 
+    when(adresService.getAdres(any(Patient.class))).thenReturn(new Adres()); 
 	  
     wicketTester.startComponentInPage(new PatientPanel("id", 
         Model.of(new Patient())));
