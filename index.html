@@ -133,9 +133,8 @@ public void testAdresOpzoekenMetGeldigePostcode() {
   Adres testAdres = new Adres("Keizerstraat", 20);
   when(ws.getAdres(anyString())).thenReturn(testAdres);
   
-  Optional&lt;Adres&gt; adres = service.getAdres(postcode);
-  assertTrue(adres.isPresent());
-  assertEquals(testAdres, adres.get());
+  Adres adres = service.getAdres(postcode);
+  assertEquals(testAdres, adres);
 }
 					</code></pre>							
 				</section>
@@ -181,7 +180,7 @@ public class PatientPanelTest {
 	
   @Test
   public void testRenderAdresVanPatientMetGeldigAdres() {
-    when(adersService.getAdres(anyString())).thenReturn(new Adres()); 
+    when(adresService.getAdres(anyString())).thenReturn(new Adres()); 
 	  
     wicketTester.startComponentInPage(new PatientPanel("id", 
         Model.of(new Patient())));
@@ -207,9 +206,8 @@ def "De adresService moet een geldig adres kunnen ophalen"() {
   def adres = adresService.getAdres("7417ZR")
 
   then:
-  adres.isPresent()
-  adres.get().straat == "Keizerstraat"
-  adres.get().nummer == 20
+  adres.straat == "Keizerstraat"
+  adres.nummer == 20
 }
 				</code></pre>	
 			</section>
