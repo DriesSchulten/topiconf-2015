@@ -80,7 +80,6 @@ public class FacturatieServiceTest extends AbstractSpringHibernateTest {
     
     FacturatieStatus status = service.factureer(dossier);
 
-    assertEquals(Status.IN_BEHANDELING, status.getStatus());
     assertNotNull(status.getId());
   }
 }
@@ -117,7 +116,6 @@ public void testStartFacturatieMetDossier() {
  
   FacturatieStatus status = service.factureer(dossier);
  
-  assertEquals(Status.IN_BEHANDELING, status.getStatus());
   Mockito.verify(oneOf(), dao).saveOrUpdate(status);
 }
 					</code></pre>
@@ -195,97 +193,6 @@ public class PatientPanelTest {
 				<section>
 					<h3>Hoe om te gaan met non-code dependencies</h3>
 				</section>
-				
-				<section>
-					<h3>HL7 bericht versturen met bijlage</h3>
-					<pre><code data-trim class="java" contenteditable>
-public class MdmVerzendServiceImpl implements MdmVerzendService {
-  @Autowired
-  private Hl7Verzender verzender;
-	
-  public void verzendMdmVoorDocument(Document document) {
-    Mdm mdm = new Mdm();
-    mdm.setStatus(bepaalStatus(document));
-    mdm.setVerzender(bepaalVerzender(document));
-    mdm.setOntvanger(bepaalOntvanger(document))
-    /* ... */
-    mdm.setData(laadDocumentDataAlsBase64(document));
-	
-    verzender.verzend(mdm);
-  }
-
-  private String laadDocumentDataAlsBase64(Document document) {
-    /* Document van schijf halen en converteren met exception handling enz... */
-  }
-}
-					</code></pre>
-				</section>
-				
-				<section>
-					<h3>Oplossing <sub class="fragment" style="font-size: 50%;">toch?</sub></h3>
-					<pre><code data-trim class="java" contenteditable>
-public void testVerzendMdmMetOntvanger() {
-  final String ontvangerCode = "0956124";	
-  Document document = new Document("Overdracht");
-  document.setOnvangerCode(ontvangerCode);
-  File testDocument = new File(getClass().getResource("/test_document.pdf").toURI());
-  document.setBestandsLocatie(testDocument.getAbsolutePath());
-  
-  mdmVerzendService.verzendMdmVoorDocument(document);
-
-  ArgumentCaptor&lt;Hl7Message&gt; argument = ArgumentCaptor.forClass(Hl7Message.class);
-  verify(verzender).verzend(argument.capture());
-  assertEquals(ontvangerCode, argument.getValue().getReceiverCode());
-}
-					</code></pre>						
-				</section>
-				
-				<section>
-					<h3>De betere oplossing (1)</h3>
-					<pre><code data-trim class="java" contenteditable>
-public interface DocumentIO {
-  String laadDocumentDataAlsBase64(Document document);
-}
-
-public class MdmVerzendServiceImpl implements MdmVerzendService {
-  @Autowired
-  private DocumentIO documentIO;
-  @Autowired
-  private Hl7Verzender verzender;
-	
-  public void verzendMdmVoorDocument(Document document) {
-    Mdm mdm = new Mdm();
-    mdm.setStatus(bepaalStatus(document));
-    mdm.setVerzender(bepaalVerzender(document));
-    mdm.setOntvanger(bepaalOntvanger(document))
-    /* ... */
-    mdm.setData(documentIO.laadDocumentDataAlsBase64(document));
-	
-    verzender.verzend(mdm);
-  }	
-}
-					</code></pre>						
-				</section>
-				
-				<section>
-					<h3>De betere oplossing (2)</h3>
-					<pre><code data-trim class="java" contenteditable>
-public void testVerzendMdmMetOntvanger() {
-  final String ontvangerCode = "0956124";	
-  Document document = new Document("Overdracht");
-  document.setOnvangerCode(ontvangerCode);
-  
-  when(documentIO.laadDocumentDataAlsBase64(any(Document.class)))
-      .thenReturn("Document inhoud");
-  
-  mdmVerzendService.verzendMdmVoorDocument(document);
-
-  ArgumentCaptor&lt;Hl7Message&gt; argument = ArgumentCaptor.forClass(Hl7Message.class);
-  verify(verzender).verzend(argument.capture());
-  assertEquals(ontvangerCode, argument.getValue().getReceiverCode());
-}
-					</code></pre>
-				</section>
 			
 			<section>
 				<h3>Spock</h3>
@@ -305,26 +212,26 @@ def "De adresService moet een geldig adres kunnen ophalen"() {
   adres.get().nummer == 20
 }
 				</code></pre>	
-				</section>
+			</section>
 			
-				<section>
-					<h3>Ter afsluiting</h3>
-					<p>Een unit-test:
-						<ul>
-							<li>is geen integratie test</li>
-							<li>test een enkele class</li>
-							<li>is 'to the point'</li>
-							<li>heeft duidelijke naamgeving</li>
-						</ul>
-					</p>
-				</section>
-				
-				<section>
-					<img src="img/ignore_commit.png"/>
-				</section>
-			</div>
-
+			<section>
+				<h3>Ter afsluiting</h3>
+				<p>Een unit-test:
+					<ul>
+						<li>is geen integratie test</li>
+						<li>test een enkele class</li>
+						<li>is 'to the point'</li>
+						<li>heeft duidelijke naamgeving</li>
+					</ul>
+				</p>
+			</section>
+			
+			<section>
+				<img src="img/ignore_commit.png"/>
+			</section>
 		</div>
+
+	</div>
 
 		<script src="lib/js/head.min.js"></script>
 		<script src="js/reveal.js"></script>
