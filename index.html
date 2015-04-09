@@ -69,7 +69,7 @@
 				
 				<section>
 					<h3>De 'integratie'-unit-test</h3>
-						<pre><code data-trim class="java" contenteditable>
+						<pre><code data-trim class="java">
 public class FacturatieServiceTest extends AbstractSpringHibernateTest {
   @Autowired
   private FacturatieService service;
@@ -92,7 +92,7 @@ public class FacturatieServiceTest extends AbstractSpringHibernateTest {
 				
 				<section>
 					<h3>Simpel voorbeeld</h3>
-					<pre><code data-trim class="java" contenteditable>
+					<pre><code data-trim class="java">
 @Test
 public void testHeeftToegangMetGeldigeHash() {
   SecurityService service = new SecurityServiceImpl();
@@ -107,7 +107,7 @@ public void testHeeftToegangMetGeldigeHash() {
 				
 				<section>
 					<h3>Mocken van dependencies <sub style="font-size: 50%;">met Mockito</sub></h3>
-					<pre><code data-trim class="java" contenteditable>
+					<pre><code data-trim class="java">
 @Test
 public void testStartFacturatieMetDossier() {
   FacturatieDao dao = Mockito.mock(FacturatieDao.class);
@@ -123,7 +123,7 @@ public void testStartFacturatieMetDossier() {
 				
 				<section>
 					<h3>Return waarden specificeren <sub style="font-size: 50%;">met Mockito</sub></h3>
-					<pre><code data-trim class="java" contenteditable>
+					<pre><code data-trim class="java">
 @Test
 public void testAdresOpzoekenMetGeldigePostcode() {
   PostcodeWebService ws = mock(PostcodeWebService.class);
@@ -146,7 +146,7 @@ public void testAdresOpzoekenMetGeldigePostcode() {
 				
 				<section>
 					<h3>Wicket Spring component</h3>
-					<pre><code data-trim class="java" contenteditable>
+					<pre><code data-trim class="java">
 public class PatientPanel extends Panel {
   @SpringBean
   private AdresService adresService;
@@ -163,7 +163,7 @@ public class PatientPanel extends Panel {
 				
 				<section>
 					<h3>Een Mockito injector</h3>
-					<pre><code data-trim class="java" contenteditable>
+					<pre><code data-trim class="java">
 public class PatientPanelTest {
   private AdresService adresService;
   
@@ -195,7 +195,7 @@ public class PatientPanelTest {
 			
 			<section>
 				<h3>Spock</h3>
-				<pre><code data-trim class="groovy" contenteditable>
+				<pre><code data-trim class="groovy">
 def "De adresService moet een geldig adres kunnen ophalen"() {
   given:
   def postcodeWebService = Mock(PostcodeWebService)
